@@ -430,9 +430,17 @@ function(z_vcpkg_add_vcpkg_to_cmake_path list suffix)
     endif()
     set("${list}" "${${list}}" PARENT_SCOPE)
 endfunction()
-z_vcpkg_add_vcpkg_to_cmake_path(CMAKE_PREFIX_PATH "")
 z_vcpkg_add_vcpkg_to_cmake_path(CMAKE_LIBRARY_PATH "/lib/manual-link")
 z_vcpkg_add_vcpkg_to_cmake_path(CMAKE_FIND_ROOT_PATH "")
+
+z_vcpkg_add_vcpkg_to_cmake_path(PKG_CONFIG_PATH "/lib/pkgconfig")
+if(VCPKG_PREFER_SYSTEM_LIBS)
+    list(INSERT PKG_CONFIG_PATH 0 "$ENV{PKG_CONFIG_PATH}")
+else()
+    list(APPEND PKG_CONFIG_PATH "$ENV{PKG_CONFIG_PATH}")
+endif()
+string(REPLACE ";" ":" PKG_CONFIG_PATH "${PKG_CONFIG_PATH}")
+set(ENV{PKG_CONFIG_PATH} ${PKG_CONFIG_PATH})
 
 if(NOT VCPKG_PREFER_SYSTEM_LIBS)
     set(CMAKE_FIND_FRAMEWORK "LAST") # we assume that frameworks are usually system-wide libs, not vcpkg-built
@@ -445,8 +453,11 @@ endif()
 # the libraries are searched as they are, it is necessary to add "/" to the CMAKE_PREFIX_PATH
 if(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE STREQUAL "ONLY" OR
    CMAKE_FIND_ROOT_PATH_MODE_LIBRARY STREQUAL "ONLY" OR
-   CMAKE_FIND_ROOT_PATH_MODE_PACKAGE STREQUAL "ONLY")
-   list(APPEND CMAKE_PREFIX_PATH "/")
+   CMAKE_FIND_ROOT_PATH_MODE_PACKAGE STREQUAL "ONLY" OR
+   VCPKG_PREFER_SYSTEM_LIBS)
+    list(APPEND CMAKE_PREFIX_PATH "/")
+else()
+    list(INSERT CMAKE_PREFIX_PATH 0 "/")
 endif()
 
 set(VCPKG_CMAKE_FIND_ROOT_PATH "${CMAKE_FIND_ROOT_PATH}")
@@ -566,6 +577,7 @@ if(VCPKG_SETUP_CMAKE_PROGRAM_PATH)
     set(tools_base_path "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools")
     if(VCPKG_USE_HOST_TOOLS)
         set(tools_base_path "${VCPKG_INSTALLED_DIR}/${VCPKG_HOST_TRIPLET}/tools")
+        set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     endif()
     list(APPEND CMAKE_PROGRAM_PATH "${tools_base_path}")
     file(GLOB Z_VCPKG_TOOLS_DIRS LIST_DIRECTORIES true "${tools_base_path}/*")
