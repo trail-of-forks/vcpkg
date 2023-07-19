@@ -1,6 +1,6 @@
 {
   "name": "vcpkg-cmake",
-  "version-date": "2023-04-21",
+  "version-date": "2023-07-19",
   "documentation": "https://vcpkg.io/en/docs/maintainers/ports/vcpkg-cmake.html",
   "license": "MIT"
 }
