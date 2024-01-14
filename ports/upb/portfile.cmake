@@ -32,8 +32,11 @@ endif()
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}/cmake"
-    OPTIONS ${FEATURE_OPTIONS}
+    OPTIONS
+        ${FEATURE_OPTIONS}
         "-DVCPKG_UPB_HOST_INCLUDE_DIR=${CURRENT_HOST_INSTALLED_DIR}/include"
+    OPTIONS_DEBUG
+        -DVCPKG_UPB_BUILD_CODEGEN=OFF
 )
 
 vcpkg_cmake_install(ADD_BIN_TO_PATH)
@@ -46,8 +49,6 @@ if (VCPKG_UPB_BUILD_CODEGEN)
             protoc-gen-upbdefs
             protoc-gen-upb
     )
-else()
-    configure_file("${CMAKE_CURRENT_LIST_DIR}/upb-config-vcpkg-tools.cmake" "${CURRENT_PACKAGES_DIR}/share/upb/upb-config-vcpkg-tools.cmake" @ONLY)
 endif()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/include/upb/fuzz" "${CURRENT_PACKAGES_DIR}/debug/share" "${CURRENT_PACKAGES_DIR}/debug/include")

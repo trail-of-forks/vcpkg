@@ -10,21 +10,17 @@ vcpkg_from_github(
         fix-uwp-build.patch
 )
 
-set(options "")
-if(VCPKG_CROSSCOMPILING)
-    list(APPEND options -DFLATBUFFERS_BUILD_FLATC=OFF -DFLATBUFFERS_BUILD_FLATHASH=OFF)
-    if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
-        # The option may cause "#error Unsupported architecture"
-        list(APPEND options -DFLATBUFFERS_OSX_BUILD_UNIVERSAL=OFF)
-    endif()
-endif()
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+    FEATURES
+        codegen FLATBUFFERS_BUILD_FLATC
+)
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         -DFLATBUFFERS_BUILD_TESTS=OFF
         -DFLATBUFFERS_BUILD_GRPCTEST=OFF
-        ${options}
+        ${FEATURE_OPTIONS}
     OPTIONS_DEBUG
         -DFLATBUFFERS_BUILD_FLATC=OFF
 )
@@ -36,9 +32,6 @@ vcpkg_fixup_pkgconfig()
 file(GLOB flatc_path ${CURRENT_PACKAGES_DIR}/bin/flatc*)
 if(flatc_path)
     vcpkg_copy_tools(TOOL_NAMES flatc AUTO_CLEAN)
-else()
-    file(APPEND "${CURRENT_PACKAGES_DIR}/share/flatbuffers/flatbuffers-config.cmake"
-"\ninclude(\"\${CMAKE_CURRENT_LIST_DIR}/../../../${HOST_TRIPLET}/share/flatbuffers/FlatcTargets.cmake\")\n")
 endif()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
