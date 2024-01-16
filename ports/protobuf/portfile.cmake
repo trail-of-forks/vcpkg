@@ -12,13 +12,13 @@ vcpkg_from_github(
         compile_options.patch
 )
 
-string(COMPARE EQUAL "${TARGET_TRIPLET}" "${HOST_TRIPLET}" protobuf_BUILD_PROTOC_BINARIES)
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" protobuf_BUILD_SHARED_LIBS)
 string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "static" protobuf_MSVC_STATIC_RUNTIME)
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
         zlib protobuf_WITH_ZLIB
+        codegen protobuf_BUILD_PROTOC_BINARIES
 )
 
 if(VCPKG_TARGET_IS_UWP)
@@ -82,8 +82,6 @@ if(protobuf_BUILD_PROTOC_BINARIES)
     else()
         vcpkg_copy_tools(TOOL_NAMES protoc protoc-${VERSION}.0 AUTO_CLEAN)
     endif()
-else()
-    file(COPY "${CURRENT_HOST_INSTALLED_DIR}/tools/${PORT}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools")
 endif()
 
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/${PORT}/protobuf-config.cmake"
@@ -120,9 +118,4 @@ endforeach()
 
 vcpkg_fixup_pkgconfig()
 
-if(NOT protobuf_BUILD_PROTOC_BINARIES)
-    configure_file("${CMAKE_CURRENT_LIST_DIR}/protobuf-targets-vcpkg-protoc.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/protobuf-targets-vcpkg-protoc.cmake" COPYONLY)
-endif()
-
-configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/vcpkg-cmake-wrapper.cmake" @ONLY)
 file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)

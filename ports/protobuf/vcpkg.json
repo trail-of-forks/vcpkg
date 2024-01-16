@@ -1,13 +1,17 @@
 {
   "name": "protobuf",
   "version": "3.21.12",
+  "port-version": 1,
   "description": "Protocol Buffers - Google's data interchange format",
   "homepage": "https://github.com/protocolbuffers/protobuf",
   "license": "BSD-3-Clause",
   "dependencies": [
     {
       "name": "protobuf",
-      "host": true
+      "host": true,
+      "features": [
+        "codegen"
+      ]
     },
     {
       "name": "vcpkg-cmake",
@@ -19,6 +23,10 @@
     }
   ],
   "features": {
+    "codegen": {
+      "description": "Build code generator machinery",
+      "supports": "!uwp"
+    },
     "zlib": {
       "description": "ZLib based features like Gzip streams",
       "dependencies": [

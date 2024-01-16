@@ -21,10 +21,6 @@ vcpkg_from_github(
         00015-disable-download-archive.patch
 )
 
-if(NOT TARGET_TRIPLET STREQUAL HOST_TRIPLET)
-    vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/grpc")
-endif()
-
 string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "static" gRPC_MSVC_STATIC_RUNTIME)
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" gRPC_STATIC_LINKING)
 
@@ -62,6 +58,8 @@ vcpkg_cmake_configure(
         -DgRPC_INSTALL_CMAKEDIR:STRING=share/grpc
         "-D_gRPC_PROTOBUF_PROTOC_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/protobuf/protoc${VCPKG_HOST_EXECUTABLE_SUFFIX}"
         "-DProtobuf_PROTOC_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/protobuf/protoc${VCPKG_HOST_EXECUTABLE_SUFFIX}"
+    OPTIONS_DEBUG
+        gRPC_BUILD_CODEGEN=OFF
     MAYBE_UNUSED_VARIABLES
         gRPC_MSVC_STATIC_RUNTIME
 )
@@ -82,8 +80,6 @@ if (gRPC_BUILD_CODEGEN)
             grpc_cpp_plugin
             grpc_ruby_plugin
     )
-else()
-    configure_file("${CMAKE_CURRENT_LIST_DIR}/gRPCTargets-vcpkg-tools.cmake" "${CURRENT_PACKAGES_DIR}/share/grpc/gRPCTargets-vcpkg-tools.cmake" @ONLY)
 endif()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share" "${CURRENT_PACKAGES_DIR}/debug/include")

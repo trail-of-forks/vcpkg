@@ -1,0 +1,37 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 62ae7c4..f6a9ebc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -26,19 +26,27 @@ foreach(_proto ${protos})
+     endforeach()
+ endforeach()
+ 
++if(CMAKE_CROSSCOMPILING)
++  find_program(offscale_grpc_cpp_plugin grpc_cpp_plugin)
++  find_program(offscale_protoc protoc)
++else()
++  set(offscale_grpc_cpp_plugin "$<TARGET_FILE:gRPC::grpc_cpp_plugin>")
++  find_program(offscale_protoc protobuf::protoc)
++endif()
++
+ add_custom_command(
+   OUTPUT  ${rpc_protofiles}
+-  COMMAND  protobuf::protoc
+-  ARGS --grpc_out=${generated_path} -I ${protodir_path} --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin> ${main_proto}
+-  DEPENDS  gRPC::grpc_cpp_plugin protobuf::protoc ${main_proto}
++  COMMAND  "${offscale_protoc}"
++  ARGS --grpc_out=${generated_path} -I ${protodir_path} "--plugin=protoc-gen-grpc=${offscale_grpc_cpp_plugin}" ${main_proto}
++  DEPENDS  "${offscale_grpc_cpp_plugin}" "${offscale_protoc}" ${main_proto}
+   COMMENT   "Running grpc protocol buffer compiler on ${main_proto}"
+   VERBATIM )
+ 
+ add_custom_command(
+   OUTPUT ${common_protofiles}
+-  COMMAND  protobuf::protoc
++  COMMAND  "${offscale_protoc}"
+   ARGS --cpp_out=${generated_path} -I ${protodir_path} ${protos}
+-  DEPENDS ${protos} protobuf::protoc
++  DEPENDS ${protos} "${offscale_protoc}"
+   COMMENT "Running cpp protocol buffer compiler on ${protos}"
+   VERBATIM )
+ 

@@ -4,6 +4,8 @@ vcpkg_from_github(
     REF "v${VERSION}"
     SHA512 4f059c33b6deec2192adbf4bdeaa230f1a96fddfc68eac1ef17578c7c208e3476ab65cf4e6940d83307df4655942c88fc6988fb2e226c2f30aa75005219133a1
     HEAD_REF master
+    PATCHES
+        grpc-cpp-plugin.patch
 )
 
 vcpkg_cmake_configure(

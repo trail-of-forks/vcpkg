@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0a53d5ee..e73786f1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -204,6 +204,9 @@ if (GOOGLE_CLOUD_CPP_ENABLE_GRPC)
+     # CMake configuration files. There is no obvious analog for the gRPC plugin.
+     # gRPC only exports the targets (e.g. `gRPC::grpc_cpp_plugin`) when
+     # applicable. We define our own variable.
++    if(CMAKE_CROSSCOMPILING)
++        find_program(GOOGLE_CLOUD_CPP_GRPC_PLUGIN_EXECUTABLE grpc_cpp_plugin)
++    else()
+     set(GOOGLE_CLOUD_CPP_GRPC_PLUGIN_EXECUTABLE
+         $<TARGET_FILE:gRPC::grpc_cpp_plugin>
+         CACHE
+@@ -214,6 +217,7 @@ One may need to override the default location when cross-compiling, as the gRPC
+ package will point to the target environment and the plugin won't run on the
+ host environment.
+ ]==])
++    endif()
+     mark_as_advanced(GOOGLE_CLOUD_CPP_GRPC_PLUGIN_EXECUTABLE)
+ 
+     set(GOOGLE_CLOUD_CPP_FIND_DEPENDENCY_PROTOBUF

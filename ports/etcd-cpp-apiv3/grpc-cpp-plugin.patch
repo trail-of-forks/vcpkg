@@ -1,0 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d2520fe..e02b610 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -123,7 +123,11 @@ endif()
+ find_package(gRPC QUIET)
+ if(gRPC_FOUND AND TARGET gRPC::grpc AND TARGET gRPC::grpc_cpp_plugin)
+     set(GRPC_LIBRARIES gRPC::gpr gRPC::grpc gRPC::grpc++)
++    if(CMAKE_CROSSCOMPILING)
++        find_program(GRPC_CPP_PLUGIN grpc_cpp_plugin)
++    else()
+     get_target_property(GRPC_CPP_PLUGIN gRPC::grpc_cpp_plugin LOCATION)
++    endif()
+     get_target_property(GRPC_INCLUDE_DIR gRPC::grpc INTERFACE_INCLUDE_DIRECTORIES)
+ else()
+     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindGRPC.cmake)

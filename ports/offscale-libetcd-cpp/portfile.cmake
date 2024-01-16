@@ -7,6 +7,7 @@ vcpkg_from_github(
     PATCHES
         fix-dependency-grpc.patch
         install-debug.patch
+        grpc-protobuf-crosscompilation.patch
 )
 
 vcpkg_cmake_configure(
